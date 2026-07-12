@@ -1,31 +1,11 @@
-name: Generar ZIP del Plugin
-
-on:
-  release:
-    types: [published]
-
-jobs:
-  build:
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
-      
-    steps:
-      - name: Clonar el repositorio
-        uses: actions/checkout@v4
-
-      - name: Preparar y comprimir la carpeta
+- name: Preparar y comprimir la carpeta
         run: |
-          # Creamos la carpeta con el nombre exacto que exige WordPress
-          mkdir mapa-pai-co
+          # Creamos un directorio temporal para preparar los archivos
+          mkdir build
           
-          # Copiamos los archivos del plugin, ignorando cosas de git
-          rsync -rc --exclude='.git/' --exclude='.github/' --exclude='mapa-pai-co/' ./ mapa-pai-co/
+          # Copiamos todo el contenido (excluyendo lo que no debe ir) hacia la carpeta 'build'
+          rsync -av --exclude='.git' --exclude='.github' --exclude='build' --exclude='mapa-pai-co.zip' ./ build/
           
-          # Comprimimos la carpeta en un zip listo para producción
-          zip -r mapa-pai-co.zip mapa-pai-co/
-
-      - name: Subir el ZIP al Release
-        uses: softprops/action-gh-release@v2
-        with:
-          files: mapa-pai-co.zip
+          # Entramos en la carpeta 'build' y comprimimos todo su contenido
+          # El punto '.' al final significa "comprime todo lo que hay aquí"
+          cd build && zip -r ../mapa-pai-co.zip .
