@@ -2,8 +2,8 @@
 Contributors: Himmeros
 Tags: directorio, clientes, mapas
 Requires at least: 6.0
-Tested up to: 6.5
-Stable tag: 1.0.1
+Tested up to: 7.1
+Stable tag: 1.0.9
 
 == Descripción ==
 Este plugin es la solución definitiva para gestionar clientes en Páginas Amarillas.
@@ -17,6 +17,10 @@ Este plugin es la solución definitiva para gestionar clientes en Páginas Amari
 Simplemente activa el plugin desde el escritorio de WordPress.
 
 == Registro de cambios ==
+
+= 1.0.9 =
+* Ajuste del mapa para pantalla móvil .
+
 = 1.0.3 =
 * Arreglo de las rutas con el nombre adecuado .
 

@@ -20,11 +20,19 @@ function mapa_pai_shortcode_cliente( $atts ) {
 
     $map_id = 'mapa-single-' . $post_id;
     
-    $html = '<div id="' . $map_id . '" style="height: 300px; width: 100%; border: 1px solid #ddd; border-radius: 8px;"></div>';
+    // CORRECCIÓN RESPONSIVE: Estilos estructurados en lugar de atributos inline rígidos
+    $html = '
+    <style>
+        #' . $map_id . ' { height: 400px; width: 100%; border: 1px solid #ddd; border-radius: 8px; z-index: 1; }
+        @media (max-width: 768px) { 
+            #' . $map_id . ' { height: 50vh; min-height: 350px; } 
+        }
+    </style>';
+    
+    $html .= '<div id="' . $map_id . '"></div>';
     
     $html .= '<script>
     document.addEventListener("DOMContentLoaded", function() {
-        // Definir las capas disponibles
         var osm = L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", { attribution: "© OpenStreetMap" });
         var cartoLight = L.tileLayer("https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png", { attribution: "© CartoDB" });
         var cartoDark = L.tileLayer("https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png", { attribution: "© CartoDB" });
@@ -37,25 +45,25 @@ function mapa_pai_shortcode_cliente( $atts ) {
             "Topográfico": topo
         };
 
-        // Identificar la capa guardada en opciones como predeterminada
         var capaSeleccionadaUrl = "' . esc_js($capa_mapa) . '";
-        var capaInicial = osm; // Fallback
+        var capaInicial = osm;
         
         if (capaSeleccionadaUrl.indexOf("light_all") !== -1) capaInicial = cartoLight;
         if (capaSeleccionadaUrl.indexOf("dark_all") !== -1) capaInicial = cartoDark;
         if (capaSeleccionadaUrl.indexOf("opentopomap") !== -1) capaInicial = topo;
 
-        // Inicializar el mapa con la capa por defecto
         var map = L.map("' . $map_id . '", {
             center: [' . $lat . ', ' . $lon . '],
             zoom: 16,
             layers: [capaInicial]
         });
         
-        // Agregar el control interactivo de capas
         L.control.layers(mapasBase, null, { position: "topright" }).addTo(map);
         
         L.marker([' . $lat . ', ' . $lon . ']).addTo(map).bindPopup("<b>' . esc_js($nombre) . '</b>").openPopup();
+        
+        // CORRECCIÓN: Fuerza a Leaflet a recalcular sus dimensiones en móviles durante el renderizado inicial
+        setTimeout(function(){ map.invalidateSize(); }, 400);
     });
     </script>';
     
@@ -126,7 +134,6 @@ function mapa_pai_shortcode_directorio() {
     $dimensiones = get_option('mapa_pai_dimensiones', array('width' => '100%', 'height' => '500px'));
     $capa_mapa = get_option('mapa_pai_capa_estilo', 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png');
     
-    // Obtenemos el color desde las opciones. Si viene vacío, forzamos #111
     $color_sidebar_opcion = get_option('mapa_pai_color_directorio', '#111');
     $color_sidebar = !empty($color_sidebar_opcion) ? $color_sidebar_opcion : '#111';
     
@@ -143,7 +150,6 @@ function mapa_pai_shortcode_directorio() {
         .mapa-pai-item-cliente { padding: 12px 15px; border-bottom: 1px solid rgba(255,255,255,0.05); cursor: pointer; transition: background 0.2s; list-style: none !important; list-style-type: none !important; margin: 0 !important; }
         .mapa-pai-item-cliente:hover { background-color: rgba(255,255,255,0.1); }
         
-        /* Clase para el elemento seleccionado */
         .mapa-pai-item-seleccionado { background-color: rgba(255, 255, 255, 0.15) !important; border-left: 4px solid #fff !important; }
         
         .mapa-pai-item-nombre { font-weight: bold; font-size: 14px; margin-bottom: 4px; display: flex; align-items: center; gap: 8px; }
@@ -169,9 +175,9 @@ function mapa_pai_shortcode_directorio() {
         }
 
         @media (max-width: 768px) {
-            .mapa-pai-wrapper { flex-direction: column; height: auto; }
-            .mapa-pai-sidebar { width: 100%; height: 350px; }
-            .mapa-pai-mapa-container { width: 100%; height: 400px; }
+            .mapa-pai-wrapper { flex-direction: column; height: auto !important; display: flex; }
+            .mapa-pai-sidebar { width: 100%; height: 280px; }
+            .mapa-pai-mapa-container { width: 100%; height: 60vh; min-height: 400px; display: block; }
         }
     </style>';
 
@@ -251,8 +257,9 @@ function mapa_pai_shortcode_directorio() {
                                      cliente.direccion + "<br>" +
                                      "<a href=\'" + cliente.permalink + "\' style=\'color: #2196F3; text-decoration: none; display: inline-block; margin-top: 6px; font-weight: bold; font-size: 12px;\'>Ver detalles →</a>";
 
+                // Le agregué autoClose: false para que no cierre tu globo de "Estoy aquí"
                 var nuevoMarcador = L.marker([latNum, lonNum], { icon: iconoPersonalizado })
-                    .bindPopup(contenidoPopup);
+                    .bindPopup(contenidoPopup, { autoClose: false });
                 
                 nuevoMarcador.categorias = cliente.categorias;
                 nuevoMarcador.textoBusqueda = (cliente.nombre + " " + cliente.direccion).toLowerCase();
@@ -270,15 +277,12 @@ function mapa_pai_shortcode_directorio() {
                 `;
                 
                 li.addEventListener("click", function() {
-                    // Quitar la clase de selección a todos
                     document.querySelectorAll(".mapa-pai-item-cliente").forEach(function(el) {
                         el.classList.remove("mapa-pai-item-seleccionado");
                     });
                     
-                    // Agregar la clase de selección al clicado
                     li.classList.add("mapa-pai-item-seleccionado");
 
-                    map.closePopup(); 
                     marcadorSeleccionado = nuevoMarcador; 
                     map.flyTo([latNum, lonNum], 16, { animate: true, duration: 1.2 });
                     map.once("moveend", function() { nuevoMarcador.openPopup(); });
@@ -306,7 +310,7 @@ function mapa_pai_shortcode_directorio() {
             }
         });
 
-        setTimeout(function(){ map.invalidateSize(); }, 300);
+        setTimeout(function(){ map.invalidateSize(); }, 400);
 
         if (hayMarcadores) { map.fitBounds(limitesMapa, { padding: [40, 40], maxZoom: 15 }); } else { map.setView([10.4806, -66.9036], 13); }
 
@@ -323,11 +327,9 @@ function mapa_pai_shortcode_directorio() {
         
         map.addControl(new BotonUbicacion());
         
-        // Cuadro derecha superior
         var controlCategorias = L.control({ position: "topright" });
         controlCategorias.onAdd = function (map) {
             var div = L.DomUtil.create("div", "mapa-pai-leyenda-categorias");
-            // Se usa el color exacto o el fallback si hay fallo
             div.style.backgroundColor = "' . esc_js($color_sidebar) . '";
             div.style.color = "#fff";
             div.style.padding = "15px";
@@ -376,9 +378,10 @@ function mapa_pai_shortcode_directorio() {
         map.on("locationfound", function(e) {
             if (marcadorUsuario) map.removeLayer(marcadorUsuario);
             
+            // Texto devuelto a "Estoy aquí" + autoClose: false 
             marcadorUsuario = L.marker(e.latlng, { icon: iconoGpsPulsante })
                 .addTo(map)
-                .bindPopup("<b style=\'color:#000;\'>Te encuentras aquí</b>");
+                .bindPopup("<b style=\'color:#000;\'>Estoy aquí</b>", { autoClose: false });
             
             if (marcadorSeleccionado) {
                 var limites = L.latLngBounds([
@@ -392,6 +395,10 @@ function mapa_pai_shortcode_directorio() {
                 map.setView(e.latlng, 15);
                 marcadorUsuario.openPopup();
             }
+        });
+
+        window.addEventListener("resize", function() {
+            map.invalidateSize();
         });
     });
     </script>';
