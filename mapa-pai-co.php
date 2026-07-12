@@ -24,22 +24,26 @@ $myUpdateChecker = PucFactory::buildUpdateChecker(
 
 // Esto ayuda a WordPress a relacionar la actualización con la carpeta actual
 add_filter('upgrader_source_selection', function($source, $remote_source, $upgrader) {
-    // MUY IMPORTANTE: Solo aplicamos el cambio si la carpeta que se está descargando es de nuestro plugin
-    if (stripos($source, 'mapa-pai-co') === false) {
+    // 1. Limpiamos la ruta de cualquier barra final para no romper dirname()
+    $source_clean = untrailingslashit($source);
+    
+    // 2. Solo aplicamos el cambio si la carpeta descargada pertenece a nuestro plugin
+    if (stripos($source_clean, 'mapa-pai-co') === false) {
         return $source;
     }
 
-    // Si la carpeta es la nuestra, la renombramos a la estructura correcta
+    // 3. Construimos las rutas correctas
     $desired_folder_name = 'mapa-pai-co'; 
-    $source_base = dirname($source);
+    $source_base = dirname($source_clean);
     $new_source = $source_base . '/' . $desired_folder_name;
 
-    if ($source !== $new_source) {
-        rename($source, $new_source);
-        return $new_source;
+    // 4. Renombramos si es necesario y devolvemos con la barra final que exige WordPress
+    if ($source_clean !== $new_source) {
+        rename($source_clean, $new_source);
+        return trailingslashit($new_source);
     }
 
-    return $source;
+    return trailingslashit($source_clean);
 }, 10, 3);
 
 
