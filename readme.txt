@@ -1,0 +1,22 @@
+=== Mapa PAI Co. ===
+Contributors: Himmeros
+Tags: directorio, clientes, mapas
+Requires at least: 6.0
+Tested up to: 6.5
+Stable tag: 1.0.1
+
+== Descripción ==
+Este plugin es la solución definitiva para gestionar clientes en Páginas Amarillas.
+
+= Características principales =
+* Gestión rápida de directorios.
+* Atajos de teclado personalizados.
+* Visualización optimizada de mapas.
+
+== Instalación ==
+Simplemente activa el plugin desde el escritorio de WordPress.
+
+== Registro de cambios ==
+= 1.0.2 =
+* Mejora en la conexión con GitHub.
+* Ajustes visuales.
