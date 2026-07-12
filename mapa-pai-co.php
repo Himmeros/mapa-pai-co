@@ -3,7 +3,7 @@
  * Plugin Name: Mapa PAI Co.
  * Plugin URI:  https://github.com/Himmeros/mapa-pai-co/
  * Description: Sistema de directorio y gestión de clientes mediante atajos, creado para Páginas Amarillas en Internet.
- * Version:     1.0.7
+ * Version:     1.0.8
  * Author:      Proyectos Himmeros
  * Text Domain: himmeros.xyz
  */
@@ -17,7 +17,7 @@ use YahnisElsts\PluginUpdateChecker\v5\PucFactory;
 
 // Configura la conexión con tu repositorio de GitHub
 $myUpdateChecker = PucFactory::buildUpdateChecker(
-    'https://github.com/Himmeros/mapa-pai-co/', // La URL de tu repo
+    'https://github.com/Himmeros/mapa-pai-co', // La URL de tu repo
     __FILE__, // Ruta al archivo principal del plugin
     'mapa-pai-co' // El slug (nombre único) de tu plugin
 );
