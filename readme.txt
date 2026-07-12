@@ -18,6 +18,12 @@ Simplemente activa el plugin desde el escritorio de WordPress.
 
 == Registro de cambios ==
 
+= 1.1.1 =
+* Ajueste del readme.txt .
+
+= 1.1.0 =
+* Detalles menores de actualización .
+
 = 1.0.9 =
 * Ajuste del mapa para pantalla móvil .
 
