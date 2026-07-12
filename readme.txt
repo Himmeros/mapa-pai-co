@@ -17,6 +17,9 @@ Este plugin es la solución definitiva para gestionar clientes en Páginas Amari
 Simplemente activa el plugin desde el escritorio de WordPress.
 
 == Registro de cambios ==
+= 1.0.3 =
+* Arreglo de las rutas con el nombre adecuado .
+
 = 1.0.2 =
 * Mejora en la conexión con GitHub.
 * Ajustes visuales.

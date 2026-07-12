@@ -1,0 +1,88 @@
+/* Estilos para el cuadro flotante de categorías en el mapa */
+.mapa-pai-leyenda-categorias {
+    background-color: white;
+    padding: 12px 15px;
+    border-radius: 5px;
+    box-shadow: 0 1px 5px rgba(0,0,0,0.4);
+    font-family: Arial, sans-serif;
+    color: #333;
+    line-height: 1.6;
+}
+
+.mapa-pai-leyenda-categorias h4 {
+    margin: 0 0 10px 0;
+    font-size: 14px;
+    color: #111;
+    font-weight: bold;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 5px;
+}
+
+.mapa-pai-leyenda-categorias label {
+    font-size: 13px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.mapa-pai-leyenda-categorias input[type="checkbox"] {
+    margin: 0;
+    cursor: pointer;
+}
+
+/* =========================================
+   ESTILOS DEL MARCADOR GPS (PUNTO PULSANTE)
+   ========================================= */
+
+.custom-gps-icon {
+    background: transparent;
+    border: none;
+}
+
+.burbuja-gps-contenedor {
+    position: relative;
+    width: 20px;
+    height: 20px;
+}
+
+/* El punto central sólido */
+.burbuja-gps-centro {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 14px;
+    height: 14px;
+    background-color: #2196F3; /* Azul tipo Google Maps */
+    border: 2px solid white;
+    border-radius: 50%;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.5);
+    z-index: 2;
+}
+
+/* La onda animada que pulsa */
+.burbuja-gps-onda {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 100%;
+    height: 100%;
+    background-color: rgba(33, 150, 243, 0.4);
+    border-radius: 50%;
+    z-index: 1;
+    animation: pulsar-gps 1.5s infinite ease-out;
+}
+
+/* Animación del pulso */
+@keyframes pulsar-gps {
+    0% {
+        transform: translate(-50%, -50%) scale(0.8);
+        opacity: 1;
+    }
+    100% {
+        transform: translate(-50%, -50%) scale(2.5);
+        opacity: 0;
+    }
+}
