@@ -22,6 +22,29 @@ $myUpdateChecker = PucFactory::buildUpdateChecker(
     'mapa-pai-co' // El slug (nombre único) de tu plugin
 );
 
+// Ajueste de búsqueda de actualizaciones
+
+add_filter( 'plugins_api', 'mi_plugin_info_handler', 10, 3 );
+
+function mi_plugin_info_handler( $result, $action, $args ) {
+    // Solo actuamos si el plugin que buscan es el tuyo
+    if ( 'plugin_information' !== $action || 'mapa-pai-co' !== $args->slug ) {
+        return $result;
+    }
+
+    // Aquí defines la información que quieres mostrar
+    $plugin_info = new stdClass();
+    $plugin_info->name = 'Mapa PAI Co.';
+    $plugin_info->version = '1.0.0'; // Deberías poner la versión actual aquí
+    $plugin_info->author = 'Tu Nombre/Empresa';
+    $plugin_info->sections = array(
+        'description' => 'Este es el plugin Mapa PAI Co. gestionado desde GitHub.',
+        'changelog'   => 'Aquí podrías cargar dinámicamente tu archivo CHANGELOG.md de GitHub.'
+    );
+
+    return $plugin_info;
+}
+
 // Esto ayuda a WordPress a relacionar la actualización con la carpeta actual
 add_filter('upgrader_source_selection', function($source, $remote_source, $upgrader) {
     // 1. Limpiamos la ruta de cualquier barra final para no romper dirname()
