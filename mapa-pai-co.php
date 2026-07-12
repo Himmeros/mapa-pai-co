@@ -22,9 +22,6 @@ $myUpdateChecker = PucFactory::buildUpdateChecker(
     'mapa-pai-co' // El slug (nombre único) de tu plugin    
 );
 
-// Agrega esta línea: le dice a la librería dónde buscar la info
-$myUpdateChecker->addReadme('readme.txt');
-
 // Ajueste de búsqueda de actualizaciones
 
 add_filter( 'plugins_api', 'mi_plugin_info_handler', 10, 3 );
