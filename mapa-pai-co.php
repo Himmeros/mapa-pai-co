@@ -25,7 +25,7 @@ $myUpdateChecker = PucFactory::buildUpdateChecker(
 // Esto ayuda a WordPress a relacionar la actualización con la carpeta actual
 add_filter('upgrader_source_selection', function($source, $remote_source, $upgrader) {
     // MUY IMPORTANTE: Solo aplicamos el cambio si la carpeta que se está descargando es de nuestro plugin
-    if (strpos($source, 'mapa-pai-co') === false) {
+    if (stripos($source, 'mapa-pai-co') === false) {
         return $source;
     }
 
