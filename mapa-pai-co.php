@@ -15,35 +15,15 @@
 require 'lib/plugin-update-checker/plugin-update-checker.php';
 use YahnisElsts\PluginUpdateChecker\v5\PucFactory;
 
-// Configura la conexión con tu repositorio de GitHub
+// 1. Configura la conexión con tu repositorio de GitHub
 $myUpdateChecker = PucFactory::buildUpdateChecker(
     'https://github.com/Himmeros/mapa-pai-co', // La URL de tu repo
     __FILE__, // Ruta al archivo principal del plugin
     'mapa-pai-co' // El slug (nombre único) de tu plugin    
 );
 
-// Ajueste de búsqueda de actualizaciones
-
-add_filter( 'plugins_api', 'mi_plugin_info_handler', 10, 3 );
-
-function mi_plugin_info_handler( $result, $action, $args ) {
-    // Solo actuamos si el plugin que buscan es el tuyo
-    if ( 'plugin_information' !== $action || 'mapa-pai-co' !== $args->slug ) {
-        return $result;
-    }
-
-    // Aquí defines la información que quieres mostrar
-    $plugin_info = new stdClass();
-    $plugin_info->name = 'Mapa PAI Co.';
-    $plugin_info->version = '1.0.0'; // Deberías poner la versión actual aquí
-    $plugin_info->author = 'Tu Nombre/Empresa';
-    $plugin_info->sections = array(
-        'description' => 'Este es el plugin Mapa PAI Co. gestionado desde GitHub.',
-        'changelog'   => 'Aquí podrías cargar dinámicamente tu archivo CHANGELOG.md de GitHub.'
-    );
-
-    return $plugin_info;
-}
+// 2. Cargar el módulo de la ventana de detalles
+require_once plugin_dir_path( __FILE__ ) . 'includes/plugin-info.php';
 
 // Esto ayuda a WordPress a relacionar la actualización con la carpeta actual
 add_filter('upgrader_source_selection', function($source, $remote_source, $upgrader) {
