@@ -3,7 +3,7 @@
  * Plugin Name: Mapa PAI Co.
  * Plugin URI:  https://github.com/Himmeros/mapa-pai-co/
  * Description: Sistema de directorio y gestión de clientes mediante atajos, creado para Páginas Amarillas en Internet.
- * Version:     1.1.4
+ * Version:     1.1.5
  * Author:      Proyectos Himmeros
  * Text Domain: himmeros.xyz
  */
