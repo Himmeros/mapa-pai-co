@@ -44,7 +44,20 @@ function mapa_pai_info_plugin( $result, $action, $args ) {
         </div>
     ';
     
-    $plugin_info->sections['changelog']   = '<h4>v1.1.5</h4><ul><li>Ajustes de conexión con la API de actualizaciones.</li></ul>';
+    $plugin_info -> sections['Installation'] = '<h3>Installation</h3><p>Installation instructions</p>';
+
+    $plugin_info -> sections['FAQ'] = '<h3>FAQ</h3><p>Frequently Asked Questions</p>';
+
+    $plugin_info->sections['changelog']   = '<h4>v1.1.6</h4><ul>
+        <li>Se separó el bloque de los detalles a un archivo dentro del directorio includes para mejor manejo del código.</li>
+    
+        <h4>v1.1.5</h4><ul>
+        <li>Ajustes de conexión con la API de actualizaciones.</li>
+    </ul>';
+
+    $plugin_info->sections['screenshots'] = '<h3>Screenshots</h3><p>Screenshots</p>';
+    
+    
 
     return $plugin_info;
 }
