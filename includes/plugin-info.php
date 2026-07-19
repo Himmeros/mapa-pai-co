@@ -15,7 +15,7 @@ function mapa_pai_info_plugin( $result, $action, $args ) {
     $plugin_info = is_object( $result ) ? $result : new stdClass();
     
     if ( empty( $plugin_info->name ) ) $plugin_info->name = 'Mapa PAI Co. 🇨🇴🇻🇪';
-    if ( empty( $plugin_info->version ) ) $plugin_info->version = '1.1.4';
+    if ( empty( $plugin_info->version ) ) $plugin_info->version = '1.2.0';
     if ( empty( $plugin_info->author ) ) $plugin_info->author = 'Proyectos Himmeros';
 
     if ( ! isset( $plugin_info->sections ) || ! is_array( $plugin_info->sections ) ) {
