@@ -2,8 +2,18 @@
 if ( ! defined( 'ABSPATH' ) ) exit;
 
 // ==========================================
+// CARGAR ESTILOS CSS EXTERNOS
+// ==========================================
+function mapa_pai_cargar_css() {
+    // Si este código está dentro de un PLUGIN, usa esta línea:
+    wp_enqueue_style( 'mapa-pai-estilos', plugin_dir_url( __FILE__ ) . 'mapa-estilos.css', array(), '1.0', 'all' );
+    add_action( 'wp_enqueue_scripts', 'mapa_pai_cargar_css' );
+}
+
+// ==========================================
 // 1. SHORTCODE CLIENTE INDIVIDUAL
 // ==========================================
+
 function mapa_pai_shortcode_cliente( $atts ) {
     $atts = shortcode_atts( array( 'id' => '' ), $atts );
     $post_id = !empty( $atts['id'] ) ? $atts['id'] : get_the_ID();
@@ -140,24 +150,33 @@ function mapa_pai_shortcode_directorio() {
     $color_sidebar_opcion = get_option('mapa_pai_color_directorio', '#111');
     $color_sidebar = !empty($color_sidebar_opcion) ? $color_sidebar_opcion : '#111';
     
+    // NUEVO: Obtenemos el color del texto. Si no existe, usamos blanco por defecto.
+    $color_texto_opcion = get_option('mapa_pai_color_texto', '#ffffff');
+    $color_texto = !empty($color_texto_opcion) ? $color_texto_opcion : '#ffffff';
+    
     $html = '
     <style>
         .mapa-pai-wrapper { display: flex; gap: 15px; width: ' . esc_attr($dimensiones['width']) . '; max-width: 100%; height: ' . esc_attr($dimensiones['height']) . '; }
-        .mapa-pai-sidebar { width: 280px; background-color: ' . esc_attr($color_sidebar) . '; color: #fff; border: 2px solid #333; border-radius: 8px; display: flex; flex-direction: column; overflow: hidden; }
+        
+        /* APLICACIÓN DE COLOR DE TEXTO */
+        .mapa-pai-sidebar { width: 280px; background-color: ' . esc_attr($color_sidebar) . '; color: ' . esc_attr($color_texto) . '; border: 2px solid #333; border-radius: 8px; display: flex; flex-direction: column; overflow: hidden; }
         .mapa-pai-sidebar-header { padding: 15px; border-bottom: 1px solid rgba(255,255,255,0.1); background-color: rgba(0,0,0,0.2); }
-        .mapa-pai-sidebar-header h3 { margin: 0 0 10px 0; color: #fff; font-size: 16px; }
-        .mapa-pai-buscador-input { width: 100%; padding: 8px 12px; border-radius: 4px; border: 1px solid rgba(255,255,255,0.2); background-color: rgba(0,0,0,0.3); color: #fff; font-size: 13px; box-sizing: border-box; transition: border-color 0.2s; }
+        .mapa-pai-sidebar-header h4 { margin: 0 0 10px 0; color: ' . esc_attr($color_texto) . '; font-size: 16px; }
+        .mapa-pai-buscador-input { width: 100%; padding: 8px 12px; border-radius: 4px; border: 1px solid rgba(255,255,255,0.2); background-color: rgba(0,0,0,0.3); color: ' . esc_attr($color_texto) . '; font-size: 13px; box-sizing: border-box; transition: border-color 0.2s; }
         .mapa-pai-buscador-input:focus { outline: none; border-color: #2196F3; }
-        .mapa-pai-buscador-input::placeholder { color: #ccc; }
+        .mapa-pai-buscador-input::placeholder { color: ' . esc_attr($color_texto) . '; opacity: 0.7; }
+        /* FIN APLICACIÓN */
+        
         .mapa-pai-sidebar-lista { flex: 1; overflow-y: auto; list-style: none !important; list-style-type: none !important; padding: 0 !important; margin: 0 !important; }
         .mapa-pai-item-cliente { padding: 12px 15px; border-bottom: 1px solid rgba(255,255,255,0.05); cursor: pointer; transition: background 0.2s; list-style: none !important; list-style-type: none !important; margin: 0 !important; }
         .mapa-pai-item-cliente:hover { background-color: rgba(255,255,255,0.1); }
         
-        .mapa-pai-item-seleccionado { background-color: rgba(255, 255, 255, 0.15) !important; border-left: 4px solid #fff !important; }
+        /* APLICACIÓN AL BORDE DE SELECCIÓN */
+        .mapa-pai-item-seleccionado { background-color: rgba(255, 255, 255, 0.15) !important; border-left: 4px solid ' . esc_attr($color_texto) . ' !important; }
         
         .mapa-pai-item-nombre { font-weight: bold; font-size: 14px; margin-bottom: 4px; display: flex; align-items: center; gap: 8px; }
         .mapa-pai-item-color { width: 12px; height: 12px; border-radius: 50%; display: inline-block; flex-shrink: 0; }
-        .mapa-pai-item-direccion { font-size: 12px; color: #ccc; line-height: 1.3; }
+        .mapa-pai-item-direccion { font-size: 12px; opacity: 0.8; line-height: 1.3; }
         .mapa-pai-mapa-container { flex: 1; border: 2px solid #333; border-radius: 8px; height: 100%; z-index: 1; }
         .custom-gps-icon, .custom-pin-icon { background: transparent; border: none; }
         .burbuja-gps-contenedor { position: relative; width: 20px; height: 20px; }
@@ -184,11 +203,13 @@ function mapa_pai_shortcode_directorio() {
         }
     </style>';
 
+    // Categorías
+
     $html .= '
     <div class="mapa-pai-wrapper">
         <div class="mapa-pai-sidebar">
             <div class="mapa-pai-sidebar-header">
-                <h3>Directorio de Clientes</h3>
+                <h4>Directorio de Clientes</h4>
                 <input type="text" id="mapa-pai-buscador" class="mapa-pai-buscador-input" placeholder="Buscar nombre o dirección...">
             </div>
             <ul id="mapa-pai-sidebar-lista" class="mapa-pai-sidebar-lista"></ul>
@@ -242,6 +263,31 @@ function mapa_pai_shortcode_directorio() {
         var coloresCategorias = ' . $json_colores . ';
         
         var marcadorSeleccionado = null; 
+
+        // --- FUNCIÓN DE FILTRADO AGREGADA AQUÍ ---
+        function procesarFiltros() {
+            var texto = inputBuscador.value.toLowerCase();
+            var checks = document.querySelectorAll(".filtro-cat:checked");
+            var catsSeleccionadas = Array.from(checks).map(function(cb) { return cb.value; });
+
+            todosLosMarcadores.forEach(function(m) {
+                var coincideTexto = texto === "" || m.textoBusqueda.indexOf(texto) !== -1;
+                var coincideCat = catsSeleccionadas.length === 0 || m.categorias.some(function(c) { return catsSeleccionadas.includes(c); });
+
+                if (coincideTexto && coincideCat) {
+                    if (!map.hasLayer(m)) {
+                        map.addLayer(m);
+                    }
+                    if (m.elementoSidebar) m.elementoSidebar.style.display = "block";
+                } else {
+                    if (map.hasLayer(m)) {
+                        map.removeLayer(m);
+                    }
+                    if (m.elementoSidebar) m.elementoSidebar.style.display = "none";
+                }
+            });
+        }
+        // ------------------------------------------
 
         function obtenerColor(categoriasArray) {
             if (!categoriasArray || categoriasArray.length === 0) return "#333333"; 
@@ -343,14 +389,16 @@ function mapa_pai_shortcode_directorio() {
         controlCategorias.onAdd = function (map) {
             var div = L.DomUtil.create("div", "mapa-pai-leyenda-categorias");
             div.style.backgroundColor = "' . esc_js($color_sidebar) . '";
-            div.style.color = "#fff";
+            // APLICACIÓN DEL COLOR DE TEXTO AL DIV PRINCIPAL
+            div.style.color = "' . esc_js($color_texto) . '";
             div.style.padding = "15px";
             div.style.borderRadius = "5px";
             div.style.marginTop = "10px"; 
             
+            // APLICACIÓN DEL COLOR DE TEXTO A LOS ELEMENTOS INTERNOS
             div.innerHTML = "<div style=\'display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.2); padding-bottom: 5px; margin-bottom: 10px;\'>" +
-                                "<h4 style=\'margin:0; color:#fff;\'>Categorías</h4>" +
-                                "<span id=\'mapa-pai-toggle-btn\' style=\'cursor:pointer; font-weight:bold; font-size:18px; line-height:1; user-select:none; padding-left: 15px;\'>−</span>" +
+                                "<h4 style=\'margin:0; color:" + "' . esc_js($color_texto) . '" + ";\'>Categorías</h4>" +
+                                "<span id=\'mapa-pai-toggle-btn\' style=\'cursor:pointer; font-weight:bold; font-size:18px; line-height:1; user-select:none; padding-left: 15px; color:" + "' . esc_js($color_texto) . '" + ";\'>−</span>" +
                             "</div>" +
                             "<div id=\'mapa-pai-contenido-filtros\' class=\"contenedor-filtros-scroll\">" + 
                                 Array.from(categoriasUnicas).sort().map(cat => `<label style=\'display:block; margin-bottom:5px; cursor:pointer;\'><input type="checkbox" class="filtro-cat" value="${cat}" checked> ${cat}</label>`).join("") + 
