@@ -29,7 +29,7 @@ function mapa_pai_menu_administrador() {
     add_submenu_page(
         'mapa-pai-config',             
         'Configuración de CPTs',       
-        '02 Configuración',               
+        '02 Configuración',                
         'manage_options',              
         'mapa-pai-ajustes',            
         'mapa_pai_vista_configuracion' 
@@ -78,9 +78,13 @@ function mapa_pai_vista_configuracion() {
         $capa_seleccionada = sanitize_text_field($_POST['mapa_capa']);
         update_option('mapa_pai_capa_estilo', $capa_seleccionada);
         
-        // NUEVO: Guardar el Color del Directorio
+        // Guardar el Color del Directorio
         $color_directorio = sanitize_text_field($_POST['mapa_color_directorio']);
         update_option('mapa_pai_color_directorio', $color_directorio);
+
+        // NUEVO: Guardar el Color del Texto
+        $color_texto = sanitize_text_field($_POST['mapa_color_texto']);
+        update_option('mapa_pai_color_texto', $color_texto);
         
         echo '<div class="updated notice is-dismissible"><p><strong>Configuración guardada correctamente.</strong></p></div>';
     }
@@ -90,8 +94,11 @@ function mapa_pai_vista_configuracion() {
     $dimensiones      = get_option('mapa_pai_dimensiones', array('width' => '100%', 'height' => '500px'));
     $capa_actual      = get_option('mapa_pai_capa_estilo', 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png');
     
-    // NUEVO: Cargar color actual (por defecto un tono oscuro #1e1e1e)
+    // Cargar color actual de fondo
     $color_actual = get_option('mapa_pai_color_directorio', '#1e1e1e');
+
+    // NUEVO: Cargar color actual de texto (por defecto blanco #ffffff)
+    $color_texto_actual = get_option('mapa_pai_color_texto', '#ffffff');
 
     $cpts_disponibles = array(
         'page'        => 'Páginas',
@@ -142,12 +149,20 @@ function mapa_pai_vista_configuracion() {
                         </td>
                     </tr>
                     
-                    <!-- NUEVO: Fila para seleccionar el color del directorio -->
                     <tr>
-                        <th scope="row">Color del Directorio</th>
+                        <th scope="row">Color de Fondo del Directorio</th>
                         <td>
                             <input type="color" name="mapa_color_directorio" value="<?php echo esc_attr($color_actual); ?>">
                             <p class="description">Selecciona el color de fondo para la columna "Directorio de Clientes".</p>
+                        </td>
+                    </tr>
+
+                    <!-- NUEVO: Fila para seleccionar el color del texto -->
+                    <tr>
+                        <th scope="row">Color del Texto del Directorio</th>
+                        <td>
+                            <input type="color" name="mapa_color_texto" value="<?php echo esc_attr($color_texto_actual); ?>">
+                            <p class="description">Selecciona el color del texto y los iconos dentro del directorio (recomendado: un color que contraste con el fondo).</p>
                         </td>
                     </tr>
 
@@ -170,7 +185,7 @@ function mapa_pai_vista_configuracion() {
     <?php
 }
 // ==========================================
-// 4. VISTA DE LA PÁGINA "DETALLES" (NUEVO)
+// 4. VISTA DE LA PÁGINA "DETALLES"
 // ==========================================
 function mapa_pai_vista_detalles() {
     if ( ! current_user_can( 'manage_options' ) ) {
@@ -208,7 +223,7 @@ function mapa_pai_vista_detalles() {
                 <p style="font-size: 15px; line-height: 1.8; margin-bottom: 0; color: #50575e;">
                     <strong>Correo ::</strong> <a href="mailto:admhimmeros@gmail.com" style="text-decoration: none;">admhimmeros@gmail.com</a><br>
                     <strong>WhatsApp ::</strong> <a href="https://wa.me/584129998075" target="_blank" style="text-decoration: none;">+584129998075</a><br>
-                    <strong>Web ::</strong> <a href="https://himmeros.xyz" target="_blank" style="text-decoration: none;">himmeros.xys</a>
+                    <strong>Web ::</strong> <a href="https://himmeros.xyz" target="_blank" style="text-decoration: none;">himmeros.xyz</a>
                 </p>
             </div>
 
